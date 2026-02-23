@@ -1,19 +1,29 @@
-from langchain.tools import tool
 import ast
 import operator
 import re
+from typing import Type
 
-class CalculatorTools():
+from pydantic import BaseModel, Field
+from crewai.tools import BaseTool
 
-    @tool("Make a calculation")
-    def calculate(operation):
-        """Useful to perform any mathematical calculations, 
-        like sum, minus, multiplication, division, etc.
-        The input to this tool should be a mathematical 
-        expression, a couple examples are `200*7` or `5000/2*10`
-        """
+
+class CalculatorInput(BaseModel):
+    operation: str = Field(
+        ...,
+        description="A mathematical expression like 200*7 or 5000/2*10"
+    )
+
+
+class CalculatorTool(BaseTool):
+    name: str = "Make a calculation"
+    description: str = (
+        "Useful to perform mathematical calculations like addition, "
+        "subtraction, multiplication, division, powers, and modulus."
+    )
+    args_schema: Type[BaseModel] = CalculatorInput
+
+    def _run(self, operation: str):
         try:
-            # Define allowed operators for safe evaluation
             allowed_operators = {
                 ast.Add: operator.add,
                 ast.Sub: operator.sub,
@@ -24,20 +34,18 @@ class CalculatorTools():
                 ast.USub: operator.neg,
                 ast.UAdd: operator.pos,
             }
-            
-            # Parse and validate the expression
+
             if not re.match(r'^[0-9+\-*/().% ]+$', operation):
                 return "Error: Invalid characters in mathematical expression"
-            
-            # Parse the expression
+
             tree = ast.parse(operation, mode='eval')
-            
+
             def _eval_node(node):
                 if isinstance(node, ast.Expression):
                     return _eval_node(node.body)
-                elif isinstance(node, ast.Constant):  # Python 3.8+
+                elif isinstance(node, ast.Constant):
                     return node.value
-                elif isinstance(node, ast.Num):  # Python < 3.8
+                elif isinstance(node, ast.Num):
                     return node.n
                 elif isinstance(node, ast.BinOp):
                     left = _eval_node(node.left)
@@ -54,11 +62,10 @@ class CalculatorTools():
                     return op(operand)
                 else:
                     raise ValueError(f"Unsupported node type: {type(node).__name__}")
-            
-            result = _eval_node(tree)
-            return result
-            
+
+            return _eval_node(tree)
+
         except (SyntaxError, ValueError, ZeroDivisionError, TypeError) as e:
             return f"Error: {str(e)}"
-        except Exception as e:
+        except Exception:
             return "Error: Invalid mathematical expression"

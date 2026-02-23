@@ -1,3 +1,5 @@
 .env
 .DS_Store
-__pycache__.venv/
+.python-version
+__pycache__/
+*.pyc

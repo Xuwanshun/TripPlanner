@@ -5,12 +5,12 @@ description = ""
 authors = [{name = "Your Name", email = "you@example.com"}]
 requires-python = ">=3.10.0,<3.12"
 dependencies = [
-    "crewai>=0.152.0",
     "unstructured==0.10.25",
     "pyowm==3.3.0",
     "tools>=0.1.9",
-    "python-dotenv==1.0.0",
     "langchain (>=1.2.10,<2.0.0)",
+    "crewai (>=1.9.3,<2.0.0)",
+    "crewai-tools (>=1.9.3,<2.0.0)",
 ]
 
 [tool.pyright]
