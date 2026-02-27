@@ -26,9 +26,11 @@ class ScrapeWebsiteTool(BaseTool):
         }
 
         response = requests.post(url, headers=headers, data=payload)
+        # extract clean text from the HTML response
         elements = partition_html(text=response.text)
-
+        # conbine all text into one big block
         content = "\n\n".join([str(el) for el in elements])
+        # split the content into smaller chunks for processing due to token limits
         chunks = [content[i:i + 8000] for i in range(0, len(content), 8000)]
 
         summaries = []

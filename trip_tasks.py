@@ -4,88 +4,149 @@ from datetime import date
 
 class TripTasks:
 
-    def identify_task(self, agent, origin, cities, interests, range):
+    def Suggestion_task(self, agent, destination, date, hobbies):
         return Task(
             description=dedent(f"""
-                Analyze and select the best city for the trip based 
-                on specific criteria such as weather patterns, seasonal
-                events, and travel costs. This task involves comparing
-                multiple cities, considering factors like current weather
-                conditions, upcoming cultural or seasonal events, and
-                overall travel expenses. 
-                
-                Your final answer must be a detailed
-                report on the chosen city, and everything you found out
-                about it, including the actual flight costs, weather 
-                forecast and attractions.
-                {self.__tip_section()}
+                You are required to use the provided tools to complete this task.
 
-                Traveling from: {origin}
-                City Options: {cities}
-                Trip Date: {range}
-                Traveler Interests: {interests}
-            """),
+                USER INPUT:
+                - Destination: {destination}
+                - Travel Date: {date}
+                - Hobbies: {", ".join(hobbies)}
+
+                MANDATORY WORKFLOW (DO NOT SKIP STEPS):
+
+                STEP 1 — Seasonal Research
+                - Use the Search the internet tool.
+                - Search: "{destination} weather in {date}"
+                - Extract seasonal and climate conditions.
+
+                STEP 2 — Scenic Location Research
+                - Use the Search the internet tool again.
+                - Search: "Top scenic landscape locations in {destination}"
+                - Identify at least 10 real landscape places.
+
+                STEP 3 — Hobby Matching
+                - For each location:
+                    - Evaluate how it matches the hobbies.
+                    - Consider seasonal suitability.
+
+                STEP 4 — Image Retrieval (MANDATORY)
+                - For EACH selected location:
+                    - Call Landscape Image Search Tool.
+                    - Use exact location name.
+                    - Retrieve 1 real high-quality landscape image.
+                    - ONLY use image URLs returned by the tool.
+                    - DO NOT fabricate image URLs.
+
+                STEP 5 — Ranking
+                Rank the 5 locations based on:
+                1. Hobby match score
+                2. Seasonal suitability
+                3. Scenic popularity
+
+                OUTPUT RULES:
+                - You MUST use tool outputs.
+                - You MUST NOT rely only on prior knowledge.
+                - You MUST NOT invent image URLs.
+                - Return STRICTLY valid JSON.
+                - No explanations outside JSON.
+
+                RETURN FORMAT:
+
+                [
+                {{
+                    "rank": 1,
+                    "location_name": "",
+                    "season_summary": "",
+                    "description": "",
+                    "hobby_match_reason": "",
+                    "image": {{
+                        "image_url": "",
+                        "source": ""
+                    }}
+                }}
+                ]
+                """),
             agent=agent,
-            expected_output="Detailed report on the chosen city including flight costs, weather forecast, and attractions"
+            expected_output="Strict JSON ranked list with real image URLs."
         )
 
-    def gather_task(self, agent, origin, interests, range):
+    def landscape_planning_task(self, agent, trip_input):
         return Task(
             description=dedent(f"""
-                As a local expert on this city you must compile an 
-                in-depth guide for someone traveling there and wanting 
-                to have THE BEST trip ever!
-                Gather information about key attractions, local customs,
-                special events, and daily activity recommendations.
-                Find the best spots to go to, the kind of place only a
-                local would know.
-                This guide should provide a thorough overview of what 
-                the city has to offer, including hidden gems, cultural
-                hotspots, must-visit landmarks, weather forecasts, and
-                high level costs.
-                
-                The final answer must be a comprehensive city guide, 
-                rich in cultural insights and practical tips, 
-                tailored to enhance the travel experience.
-                {self.__tip_section()}
+            Generate a formal, optimized multi-city landscape trip itinerary.
 
-                Trip Date: {range}
-                Traveling from: {origin}
-                Traveler Interests: {interests}
+            INPUT:
+            {trip_input}
+
+            CORE RULES (ALWAYS APPLY):
+            1) Validate every city and landscape using Google Place Tool.
+            - Store and reference places by place_id whenever possible.
+            2) Respect the trip time window each day:
+            - day_start_time to day_end_time
+            3) Use Google Distance Matrix Tool for routing times:
+            - mode = transport_mode
+            - include departure_time to reflect traffic/transit schedules
+            4) Use Weather Forecast Tool for each landscape visit window:
+            - compute suitability score per stop
+            - if score < 50, try re-ordering within the same day/city
+            5) Use default_visit_minutes per stop unless limited by time window.
+
+            MULTI-CITY LOGIC:
+            A) If input includes cities[i].landscapes:
+            - Plan landscapes within their specified city base.
+            B) If input includes a global landscapes list (assignment_policy='auto'):
+            - Assign each landscape to the nearest/most relevant city
+                (based on distance to city center from Google Place Tool coordinates).
+            - Then plan within each city.
+
+            SCHEDULING LOGIC:
+            - For each city base, allocate days = nights (or derived from duration_days if provided).
+            - Build a daily itinerary that starts/ends at the city base.
+            - Optimize stop ordering per day to minimize travel time and reduce backtracking.
+            - Balance workload across days (avoid packing all far stops into one day).
+
+            OUTPUT (JSON ONLY, no explanation):
+            {{
+            "trip_summary": {{
+                "start_date": "...",
+                "transport_mode": "...",
+                "day_start_time": "...",
+                "day_end_time": "..."
+            }},
+            "city_plans": [
+                {{
+                "city": "...",
+                "nights": 2,
+                "days": [
+                    {{
+                    "date": "...",
+                    "total_travel_time_minutes": ...,
+                    "stops": [
+                        {{
+                        "order": 1,
+                        "name": "...",
+                        "place_id": "...",
+                        "arrival_time": "...",
+                        "departure_time": "...",
+                        "travel_minutes_from_previous": ...,
+                        "weather_score": ...,
+                        "weather_notes": [...]
+                        }}
+                    ]
+                    }}
+                ]
+                }}
+            ]
+            }}
+
+            Optimization objective:
+            - Minimize total travel time
+            - Maximize weather suitability
+            - Respect time window constraints
+            - Keep plans practical and evenly distributed
             """),
             agent=agent,
-            expected_output="Comprehensive city guide including hidden gems, cultural hotspots, and practical travel tips"
+            expected_output="Structured JSON itinerary for a multi-city trip"
         )
-
-    def plan_task(self, agent, origin, interests, range):
-        return Task(
-            description=dedent(f"""
-                Expand this guide into a full 7-day travel 
-                itinerary with detailed per-day plans, including 
-                weather forecasts, places to eat, packing suggestions, 
-                and a budget breakdown.
-                
-                You MUST suggest actual places to visit, actual hotels 
-                to stay and actual restaurants to go to.
-                
-                This itinerary should cover all aspects of the trip, 
-                from arrival to departure, integrating the city guide
-                information with practical travel logistics.
-                
-                Your final answer MUST be a complete expanded travel plan,
-                formatted as markdown, encompassing a daily schedule,
-                anticipated weather conditions, recommended clothing and
-                items to pack, and a detailed budget, ensuring THE BEST
-                TRIP EVER. Be specific and give it a reason why you picked
-                each place, what makes them special! {self.__tip_section()}
-
-                Trip Date: {range}
-                Traveling from: {origin}
-                Traveler Interests: {interests}
-            """),
-            agent=agent,
-            expected_output="Complete expanded travel plan with daily schedule, weather conditions, packing suggestions, and budget breakdown"
-        )
-
-    def __tip_section(self):
-        return "If you do your BEST WORK, I'll tip you $100!"

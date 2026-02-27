@@ -1,58 +1,52 @@
 from crewai import Agent
+from textwrap import dedent
 
 from tools.browser_tools import ScrapeWebsiteTool
 from tools.calculator_tools import CalculatorTool
 from tools.search_tools import SearchInternetTool
-
+from tools.Image_tools import LandscapeImageSearchTool
+from tools.Distance_tools import GoogleDistanceMatrixTool
+from tools.Place_tools import GooglePlaceTool
+from tools.weather_tools import WeatherForecastTool
 
 class TripAgents():
 
-    def city_selection_agent(self):
-        search_tool = SearchInternetTool()
-        scrape_tool = ScrapeWebsiteTool()
-
+    def city_landscape_suggestion_agent(self):
         return Agent(
-            role='City Selection Expert',
-            goal='Select the best city based on weather, season, and prices',
-            backstory='An expert in analyzing travel data to pick ideal destinations',
+            role="City Landscape Suggestion Agent",
+            goal="Suggest best city landscapes with real images",
+            backstory="Expert travel planner using real-time internet data",
             tools=[
-                search_tool,
-                scrape_tool
+                SearchInternetTool(),
+                ScrapeWebsiteTool(),
+                LandscapeImageSearchTool()
             ],
             verbose=True
         )
 
-    def local_expert(self):
-        search_tool = SearchInternetTool()
-        scrape_tool = ScrapeWebsiteTool()
-
+    def landscape_planning_agent(self):
         return Agent(
-            role='Local Expert at this city',
-            goal='Provide the BEST insights about the selected city',
-            backstory="""A knowledgeable local guide with extensive information
-            about the city, its attractions and customs""",
-            tools=[
-                search_tool,
-                scrape_tool
-            ],
-            verbose=True
-        )
+            role="Multi-City Landscape Trip Optimization Planner",
+            goal=(
+                "Create an optimized multi-city, multi-day landscape itinerary "
+                "considering travel time (driving/transit), traffic, weather, "
+                "and daily time constraints."
+            ),
+            backstory=dedent("""
+                You are a senior travel logistics optimizer.
+                You validate places using Google Place Tool (place_id + lat/lng),
+                compute travel times using Google Distance Matrix (traffic-aware for driving),
+                and evaluate outdoor suitability using the Weather Forecast Tool.
 
-    def travel_concierge(self):
-        search_tool = SearchInternetTool()
-        scrape_tool = ScrapeWebsiteTool()
-        calculator_tool = CalculatorTool()
-
-        return Agent(
-            role='Amazing Travel Concierge',
-            goal="""Create the most amazing travel itineraries with budget and 
-            packing suggestions for the city""",
-            backstory="""Specialist in travel planning and logistics with 
-            decades of experience""",
+                You can plan long trips that span multiple cities by:
+                - Treating each city as a base for a number of nights (days to explore).
+                - Clustering and ordering landscapes within each city.
+                - Ensuring a realistic day schedule within day_start_time/day_end_time.
+            """),
             tools=[
-                search_tool,
-                scrape_tool,
-                calculator_tool
+                GooglePlaceTool(),
+                GoogleDistanceMatrixTool(),
+                WeatherForecastTool()
             ],
             verbose=True
         )
