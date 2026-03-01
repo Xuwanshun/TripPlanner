@@ -9,7 +9,7 @@ class GoogleDistanceMatrixInput(BaseModel):
     origins: List[str] = Field(..., description="List of origins (address or place_id:XXXX)")
     destinations: List[str] = Field(..., description="List of destinations")
     mode: str = Field("driving", description="driving | transit | walking | bicycling")
-    departure_time: int = Field(..., description="Unix timestamp for departure")
+    departure_time: int = Field(None, description="Optional unix timestamp for departure (required for transit with traffic)")
 
 
 class GoogleDistanceMatrixTool(BaseTool):
@@ -17,7 +17,7 @@ class GoogleDistanceMatrixTool(BaseTool):
     description: str = "Compute travel time matrix using Google Distance Matrix API."
     args_schema: Type[BaseModel] = GoogleDistanceMatrixInput
 
-    def _run(self, origins: list, destinations: list, mode: str, departure_time: int) -> str:
+    def _run(self, origins: list, destinations: list, mode: str = "driving", departure_time: int = None) -> str:
         api_key = os.getenv("GOOGLE_MAPS_API_KEY")
         if not api_key:
             return "Missing GOOGLE_MAPS_API_KEY"
@@ -28,9 +28,12 @@ class GoogleDistanceMatrixTool(BaseTool):
             "origins": "|".join(origins),
             "destinations": "|".join(destinations),
             "mode": mode,
-            "departure_time": departure_time,
             "key": api_key,
         }
+
+        # Only add departure_time if provided (required for transit, optional for driving with traffic)
+        if departure_time:
+            params["departure_time"] = departure_time
 
         response = requests.get(url, params=params, timeout=30)
         if response.status_code != 200:
@@ -38,7 +41,14 @@ class GoogleDistanceMatrixTool(BaseTool):
 
         data = response.json()
         if data.get("status") != "OK":
-            return f"API Error: {data.get('status')}"
+            error_msg = data.get("error_message", "Unknown error")
+            return json.dumps({
+                "error": f"API Error: {data.get('status')}",
+                "message": error_msg,
+                "origins": origins,
+                "destinations": destinations,
+                "mode": mode
+            }, indent=2)
 
         matrix = []
 

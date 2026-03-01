@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from crewai.tools import BaseTool
 
 class NearbyPlacesInput(BaseModel):
-    address: str = Field(..., description="Full address or city name")
+    address: str = Field(..., description="Full address, city name, or 'lat,lng' coordinates (e.g., '43.6532,-79.3832')")
     radius: int = Field(2000, description="Search radius in meters (default 2000m)")
     max_results: int = Field(5, description="Maximum results per category")
 
@@ -15,7 +15,7 @@ class NearbyHotelRestaurantTool(BaseTool):
     name: str = "Nearby Hotel and Restaurant Finder"
     description: str = (
         "Find nearby hotels and restaurants using Google Places API "
-        "based on a given address."
+        "based on a given address or coordinates (lat,lng format)."
     )
     args_schema: Type[BaseModel] = NearbyPlacesInput
 
@@ -26,27 +26,37 @@ class NearbyHotelRestaurantTool(BaseTool):
             return "Error: GOOGLE_MAPS_API_KEY not set."
 
         # ----------------------------
-        # Step 1: Geocode Address
+        # Step 1: Get coordinates (from lat,lng or geocode address)
         # ----------------------------
-        geocode_url = "https://maps.googleapis.com/maps/api/geocode/json"
-        geocode_params = {
-            "address": address,
-            "key": api_key
-        }
+        # Check if address is already in lat,lng format
+        if "," in address and address.replace(",", "").replace(".", "").replace("-", "").replace(" ", "").isdigit():
+            try:
+                parts = address.replace(" ", "").split(",")
+                lat = float(parts[0])
+                lng = float(parts[1])
+            except (ValueError, IndexError):
+                return "Error: Invalid lat,lng format. Use 'latitude,longitude' (e.g., '43.6532,-79.3832')"
+        else:
+            # Geocode the address
+            geocode_url = "https://maps.googleapis.com/maps/api/geocode/json"
+            geocode_params = {
+                "address": address,
+                "key": api_key
+            }
 
-        geo_response = requests.get(geocode_url, params=geocode_params)
+            geo_response = requests.get(geocode_url, params=geocode_params)
 
-        if geo_response.status_code != 200:
-            return "Error: Failed to geocode address."
+            if geo_response.status_code != 200:
+                return f"Error: Failed to geocode address. HTTP {geo_response.status_code}"
 
-        geo_data = geo_response.json()
+            geo_data = geo_response.json()
 
-        if not geo_data.get("results"):
-            return "Error: Address not found."
+            if not geo_data.get("results"):
+                return f"Error: Address '{address}' not found. Try using city name or lat,lng coordinates."
 
-        location = geo_data["results"][0]["geometry"]["location"]
-        lat = location["lat"]
-        lng = location["lng"]
+            location = geo_data["results"][0]["geometry"]["location"]
+            lat = location["lat"]
+            lng = location["lng"]
 
         # ----------------------------
         # Step 2: Nearby Search
