@@ -150,3 +150,62 @@ class TripTasks:
             agent=agent,
             expected_output="Structured JSON itinerary for a multi-city trip"
         )
+
+    def Hotel_Restarants_task(self, agent, location):
+        return Task(
+            description=dedent(f"""
+                Generate hotel and restaurant recommendations.
+
+                INPUT LOCATION:
+                {location}
+
+                STEPS:
+
+                1. Use Nearby Hotel and Restaurant Finder tool
+                   to retrieve nearby hotels and restaurants.
+
+                2. Select top 5 hotels and top 5 restaurants.
+
+                3. For each selected place:
+                   - Use Search tool to gather review summaries.
+                   - Scrape at least one major review website or official site.
+                   - Extract strengths and weaknesses.
+
+                4. Assign a score (0–100) using:
+                   - Google rating
+                   - Review sentiment
+                   - Amenities
+                   - Reputation consistency
+
+                5. Provide structured output:
+
+                OUTPUT FORMAT:
+
+                {{
+                  "location": "...",
+                  "recommended_hotels": [
+                    {{
+                      "name": "...",
+                      "score": 85,
+                      "pros": [...],
+                      "cons": [...],
+                      "summary": "..."
+                    }}
+                  ],
+                  "recommended_restaurants": [
+                    {{
+                      "name": "...",
+                      "score": 90,
+                      "pros": [...],
+                      "cons": [...],
+                      "summary": "..."
+                    }}
+                  ]
+                }}
+
+                Return JSON only.
+                Do not include explanation.
+            """),
+            agent=agent,
+            expected_output="Ranked hotel and restaurant recommendation JSON"
+        )

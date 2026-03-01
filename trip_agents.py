@@ -8,6 +8,7 @@ from tools.Image_tools import LandscapeImageSearchTool
 from tools.Distance_tools import GoogleDistanceMatrixTool
 from tools.Place_tools import GooglePlaceTool
 from tools.weather_tools import WeatherForecastTool
+from tools.hotel_restaruant_tools import NearbyHotelRestaurantTool
 
 class TripAgents():
 
@@ -47,6 +48,42 @@ class TripAgents():
                 GooglePlaceTool(),
                 GoogleDistanceMatrixTool(),
                 WeatherForecastTool()
+            ],
+            verbose=True
+        )
+
+    def Hotel_Restaurant_agent(self):
+        return Agent(
+            role="Hospitality & Dining Research Analyst",
+            goal=(
+                "Find the best hotels and restaurants near a given location, "
+                "evaluate them using web research, and provide ranked recommendations "
+                "with scores and pros/cons."
+            ),
+            backstory=dedent("""
+                You are a professional travel research analyst.
+                You use:
+                - Google Places API to discover nearby hotels and restaurants.
+                - Internet search to gather reviews and reputation.
+                - Website scraping to extract deeper insights.
+                
+                You score each place based on:
+                - Rating
+                - Review sentiment
+                - Amenities
+                - Location convenience
+                - Online reputation
+                
+                You provide:
+                - Score (0–100)
+                - Pros
+                - Cons
+                - Summary
+            """),
+            tools=[
+                NearbyHotelRestaurantTool(),
+                SearchInternetTool(),
+                ScrapeWebsiteTool()
             ],
             verbose=True
         )
