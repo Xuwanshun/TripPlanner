@@ -434,8 +434,8 @@ TripPlanner/
 
 **Required APIs** (enable in [Google Cloud Console](https://console.cloud.google.com/)):
 
-| API | Purpose | Free Tier | Pricing |
-|-----|---------|-----------|---------|
+| API | Purpose |
+|-----|---------|
 | **Places API** | Attraction validation & search|
 | **Distance Matrix API** | Multi-modal travel times |
 | **Geocoding API** | Address → coordinates |
