@@ -11,7 +11,7 @@ CrewAI orchestrates autonomous AI agents that collaborate to:
 - Gather relevant information  
 - Build a complete travel itinerary based on your preferences  
 
-Originally inspired by work from [@joaomdmoura](https://x.com/joaomdmoura), this version has been refactored to align with the latest CrewAI APIs, removing deprecated tools and resolving dependency conflicts.
+Originally inspired by work from [@joaomdmoura](https://x.com/joaomdmoura), **this version has been refactored to align with the latest CrewAI APIs, removing deprecated tools and resolving dependency conflicts.**
 
 ---
 
