@@ -1,58 +1,96 @@
 from crewai import Agent
+from textwrap import dedent
 
 from tools.browser_tools import ScrapeWebsiteTool
 from tools.calculator_tools import CalculatorTool
 from tools.search_tools import SearchInternetTool
-
+from tools.Image_tools import LandscapeImageSearchTool
+from tools.Distance_tools import GoogleDistanceMatrixTool
+from tools.Place_tools import GooglePlaceTool
+from tools.weather_tools import WeatherForecastTool
+from tools.hotel_restaurant_tools import NearbyHotelRestaurantTool
 
 class TripAgents():
 
-    def city_selection_agent(self):
-        search_tool = SearchInternetTool()
-        scrape_tool = ScrapeWebsiteTool()
-
+    def city_landscape_suggestion_agent(self):
         return Agent(
-            role='City Selection Expert',
-            goal='Select the best city based on weather, season, and prices',
-            backstory='An expert in analyzing travel data to pick ideal destinations',
+            role="City Landscape Suggestion Agent",
+            goal="Suggest best city landscapes with real images",
+            backstory="Expert travel planner using real-time internet data",
             tools=[
-                search_tool,
-                scrape_tool
+                SearchInternetTool(),
+                ScrapeWebsiteTool(),
+                LandscapeImageSearchTool()
             ],
             verbose=True
         )
 
-    def local_expert(self):
-        search_tool = SearchInternetTool()
-        scrape_tool = ScrapeWebsiteTool()
-
+    def landscape_planning_agent(self):
         return Agent(
-            role='Local Expert at this city',
-            goal='Provide the BEST insights about the selected city',
-            backstory="""A knowledgeable local guide with extensive information
-            about the city, its attractions and customs""",
+            role="Multi-Destination Trip Optimization Planner",
+            goal=(
+                "Create an optimized multi-destination, multi-day trip itinerary "
+                "with detailed timing, multi-modal transportation options, nearby restaurant "
+                "recommendations, weather forecasts, and cost estimates for each day."
+            ),
+            backstory=dedent("""
+                You are a senior travel logistics optimizer and cost analyst.
+                You validate places using Google Place Tool (place_id + lat/lng),
+                compute travel times using Google Distance Matrix (traffic-aware for driving),
+                evaluate outdoor suitability using the Weather Forecast Tool,
+                find nearby restaurants using the Nearby Hotel and Restaurant Finder,
+                and calculate trip costs using the Calculator Tool.
+
+                You can plan long trips that span multiple destinations by:
+                - Treating each destination as a base for a number of nights (days to explore).
+                - Clustering and ordering attractions within each destination.
+                - Ensuring a realistic day schedule within day_start_time/day_end_time.
+                - Recommending restaurants near attractions for lunch and dinner.
+                - Providing detailed cost breakdowns including attractions, meals, and transportation.
+                - Comparing travel times across driving, transit, and walking for each leg.
+            """),
             tools=[
-                search_tool,
-                scrape_tool
+                GooglePlaceTool(),
+                GoogleDistanceMatrixTool(),
+                WeatherForecastTool(),
+                NearbyHotelRestaurantTool(),
+                CalculatorTool()
             ],
             verbose=True
         )
 
-    def travel_concierge(self):
-        search_tool = SearchInternetTool()
-        scrape_tool = ScrapeWebsiteTool()
-        calculator_tool = CalculatorTool()
-
+    def Hotel_Restaurant_agent(self):
         return Agent(
-            role='Amazing Travel Concierge',
-            goal="""Create the most amazing travel itineraries with budget and 
-            packing suggestions for the city""",
-            backstory="""Specialist in travel planning and logistics with 
-            decades of experience""",
+            role="Hospitality & Dining Research Analyst",
+            goal=(
+                "Find the best hotels and restaurants near a given location, "
+                "evaluate them using web research, and provide ranked recommendations "
+                "with scores and pros/cons."
+            ),
+            backstory=dedent("""
+                You are a professional travel research analyst.
+                You use:
+                - Google Places API to discover nearby hotels and restaurants.
+                - Internet search to gather reviews and reputation.
+                - Website scraping to extract deeper insights.
+                
+                You score each place based on:
+                - Rating
+                - Review sentiment
+                - Amenities
+                - Location convenience
+                - Online reputation
+                
+                You provide:
+                - Score (0–100)
+                - Pros
+                - Cons
+                - Summary
+            """),
             tools=[
-                search_tool,
-                scrape_tool,
-                calculator_tool
+                NearbyHotelRestaurantTool(),
+                SearchInternetTool(),
+                ScrapeWebsiteTool()
             ],
             verbose=True
         )
