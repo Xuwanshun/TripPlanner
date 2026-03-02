@@ -1,95 +1,248 @@
 # AI Crew for Trip Planning
+
 ## Introduction
-This project is an example using the CrewAI framework to automate the process of planning a trip if you are in doubt between different options. CrewAI orchestrates autonomous AI agents, enabling them to collaborate and execute complex tasks efficiently.
 
-By [@joaomdmoura](https://x.com/joaomdmoura)
+This project demonstrates how to use the **CrewAI framework (latest stable release)** to automate trip planning when you're deciding between multiple destinations.
 
-- [CrewAI Framework](#crewai-framework)
-- [Running the script](#running-the-script)
-- [Details & Explanation](#details--explanation)
-- [Using GPT 3.5](#using-gpt-35)
-- [Using Local Models with Ollama](#using-local-models-with-ollama)
-- [Contributing](#contributing)
-- [Support and Contact](#support-and-contact)
+CrewAI orchestrates autonomous AI agents that collaborate to:
+
+- Research destinations  
+- Compare options  
+- Gather relevant information  
+- Build a complete travel itinerary based on your preferences  
+
+Originally inspired by work from [@joaomdmoura](https://x.com/joaomdmoura), this version has been refactored to align with the latest CrewAI APIs, removing deprecated tools and resolving dependency conflicts.
+
+---
+
+## Table of Contents
+
+- [CrewAI Framework](#crewai-framework)  
+- [Installation](#installation)  
+- [Environment Configuration](#environment-configuration)  
+- [Running the Script](#running-the-script)  
+- [Project Structure](#project-structure)  
+- [Using Different LLM Providers](#using-different-llm-providers)  
+  - [Using OpenAI (Recommended)](#using-openai-recommended)  
+  - [Using GPT-3.5 Instead of GPT-4](#using-gpt-35-instead-of-gpt-4)  
+  - [Using Local Models with Ollama](#using-local-models-with-ollama)  
+- [What Was Updated](#what-was-updated)  
 - [License](#license)
 
+---
+
 ## CrewAI Framework
-CrewAI is designed to facilitate the collaboration of role-playing AI agents. In this example, these agents work together to choose between different of cities and put together a full itinerary for the trip based on your preferences.
+
+CrewAI enables structured collaboration between role-based AI agents.
+
+In this project:
+
+- A **City Researcher** gathers destination insights  
+- A **Local Expert** provides cultural and local knowledge  
+- A **Travel Planner** builds a complete itinerary  
+
+All agents collaborate within a Crew to produce a final trip plan.
+
+This implementation uses the **latest stable CrewAI release**, avoiding deprecated APIs and legacy LangChain integrations.
+
+---
+
+## Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repo-url>
+cd <repo-name>
+```
+
+### 2. Create a Virtual Environment (Recommended)
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # macOS/Linux
+.venv\Scripts\activate     # Windows
+```
+
+### 3. Install Dependencies
+
+If using Poetry:
+
+```bash
+poetry install
+```
+
+Or with pip:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Environment Configuration
+
+Create a `.env` file in the root directory:
+
+```env
+OPENAI_API_KEY=your_openai_key_here
+SERPER_API_KEY=your_serper_key_here
+BROWSERLESS_API_KEY=your_browserless_key_here
+```
+
+> ⚠️ If using OpenAI models (GPT-4, GPT-3.5), usage will incur API costs.
+
+---
 
 ## Running the Script
-It uses GPT-4 by default so you should have access to that to run it.
 
-***Disclaimer:** This will use gpt-4 unless you changed it 
-not to, and by doing so it will cost you money.*
+Run:
 
-- **Configure Environment**: Copy ``.env.example` and set up the environment variables for [Browseless](https://www.browserless.io/), [Serper](https://serper.dev/) and [OpenAI](https://platform.openai.com/api-keys)
-- **Install Dependencies**: Run `poetry install --no-root`.
-- **Execute the Script**: Run `poetry run python main.py` and input your idea.
-
-## Details & Explanation
-- **Running the Script**: Execute `python main.py`` and input your idea when prompted. The script will leverage the CrewAI framework to process the idea and generate a landing page.
-- **Key Components**:
-  - `./main.py`: Main script file.
-  - `./trip_tasks.py`: Main file with the tasks prompts.
-  - `./trip_agents.py`: Main file with the agents creation.
-  - `./tools`: Contains tool classes used by the agents.
-
-## Using GPT 3.5
-CrewAI allow you to pass an llm argument to the agent constructor, that will be it's brain, so changing the agent to use GPT-3.5 instead of GPT-4 is as simple as passing that argument on the agent you want to use that LLM (in `main.py`).
-```python
-from langchain.chat_models import ChatOpenAI
-
-llm = ChatOpenAI(model='gpt-3.5') # Loading GPT-3.5
-
-def local_expert(self):
-	return Agent(
-		role='Local Expert at this city',
-		goal='Provide the BEST insights about the selected city',
-		backstory="""A knowledgeable local guide with extensive information
-		about the city, it's attractions and customs""",
-		tools=[
-			SearchTools.search_internet,
-			BrowserTools.scrape_and_summarize_website,
-		],
-		llm=llm, # <----- passing our llm reference here
-		verbose=True
-	)
+```bash
+python main.py
 ```
+
+You will be prompted to enter your trip idea (for example:  
+“Beach vacation in Europe” or “Adventure trip in South America”).
+
+The CrewAI agents will collaborate and generate a complete itinerary.
+
+---
+
+## Project Structure
+
+```
+.
+├── main.py
+├── trip_agents.py
+├── trip_tasks.py
+├── tools/
+│   ├── search_tools.py
+│   └── browser_tools.py
+└── README.md
+```
+
+### Key Files
+
+- `main.py` – Entry point that builds and runs the Crew  
+- `trip_agents.py` – Agent definitions  
+- `trip_tasks.py` – Task prompts and descriptions  
+- `tools/` – Custom tools used by agents  
+
+All files have been updated to remove deprecated patterns and align with the latest CrewAI APIs.
+
+---
+
+# Using Different LLM Providers
+
+---
+
+## Using OpenAI (Recommended)
+
+Example configuration using the latest LangChain OpenAI integration:
+
+```python
+from crewai import Agent
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(
+    model="gpt-4o",
+    temperature=0.7
+)
+
+local_expert = Agent(
+    role="Local Expert",
+    goal="Provide the best insights about the selected city",
+    backstory="A knowledgeable local guide with deep cultural understanding.",
+    tools=[...],
+    llm=llm,
+    verbose=True
+)
+```
+
+---
+
+## Using GPT-3.5 Instead of GPT-4
+
+To switch models, simply change the model parameter:
+
+```python
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(
+    model="gpt-3.5-turbo",
+    temperature=0.7
+)
+```
+
+Then pass `llm=llm` into your desired agents.
+
+No other code changes are required.
+
+---
 
 ## Using Local Models with Ollama
-The CrewAI framework supports integration with local models, such as Ollama, for enhanced flexibility and customization. This allows you to utilize your own models, which can be particularly useful for specialized tasks or data privacy concerns.
 
-### Setting Up Ollama
-- **Install Ollama**: Ensure that Ollama is properly installed in your environment. Follow the installation guide provided by Ollama for detailed instructions.
-- **Configure Ollama**: Set up Ollama to work with your local model. You will probably need to [tweak the model using a Modelfile](https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md), I'd recommend adding `Observation` as a stop word and playing with `top_p` and `temperature`.
+CrewAI supports local LLMs such as Ollama.
 
-### Integrating Ollama with CrewAI
-- Instantiate Ollama Model: Create an instance of the Ollama model. You can specify the model and the base URL during instantiation. For example:
+### 1. Install Ollama
 
-```python
-from langchain.llms import Ollama
-ollama_openhermes = Ollama(model="agent")
-# Pass Ollama Model to Agents: When creating your agents within the CrewAI framework, you can pass the Ollama model as an argument to the Agent constructor. For instance:
+Follow the official installation guide from Ollama.
 
-def local_expert(self):
-	return Agent(
-		role='Local Expert at this city',
-		goal='Provide the BEST insights about the selected city',
-		backstory="""A knowledgeable local guide with extensive information
-		about the city, it's attractions and customs""",
-		tools=[
-			SearchTools.search_internet,
-			BrowserTools.scrape_and_summarize_website,
-		],
-		llm=ollama_openhermes, # Ollama model passed here
-		verbose=True
-	)
+Start a model:
+
+```bash
+ollama run llama3
 ```
 
-### Advantages of Using Local Models
-- **Privacy**: Local models allow processing of data within your own infrastructure, ensuring data privacy.
-- **Customization**: You can customize the model to better suit the specific needs of your tasks.
-- **Performance**: Depending on your setup, local models can offer performance benefits, especially in terms of latency.
+---
+
+### 2. Configure Ollama in Code
+
+```python
+from langchain_community.llms import Ollama
+from crewai import Agent
+
+ollama_llm = Ollama(
+    model="llama3",
+    base_url="http://localhost:11434"
+)
+
+local_expert = Agent(
+    role="Local Expert",
+    goal="Provide detailed local insights",
+    backstory="An experienced travel local.",
+    tools=[...],
+    llm=ollama_llm,
+    verbose=True
+)
+```
+
+---
+
+### Recommended Modelfile Tweaks
+
+When customizing a local model:
+
+- Add `Observation` as a stop word  
+- Tune `temperature`  
+- Tune `top_p`  
+
+This improves multi-agent reasoning consistency.
+
+---
+
+## What Was Updated
+
+- Removed deprecated `langchain.chat_models`  
+- Updated imports to `langchain_openai` and `langchain_community`  
+- Aligned code with latest CrewAI stable API  
+- Resolved dependency conflicts  
+- Simplified setup instructions  
+- Updated LLM configuration examples  
+
+---
 
 ## License
+
 This project is released under the MIT License.
