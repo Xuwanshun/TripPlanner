@@ -1,11 +1,11 @@
 # 🌍 AI Trip Planner - Multi-Agent Travel Orchestration
 
 ## 🎯 Overview
-An intelligent trip planning system powered by **CrewAI** that generates comprehensive, multi-day itineraries with precise timing, multi-modal transportation analysis, restaurant recommendations, weather forecasts, and cost estimates. This project demonstrates advanced AI agent collaboration to solve complex scheduling and optimization problems.
+An intelligent trip planning system powered by **CrewAI** that generates comprehensive, multi-day itineraries with precise timing, estimated transportation time, restaurant recommendations, weather forecasts, and cost estimates. This project demonstrates advanced AI agent collaboration to solve complex scheduling and optimization problems.
 
 ### ✨ Key Capabilities
 - 🗺️ **Multi-Destination Planning** - Seamlessly plan trips across multiple cities with optimized routing
-- 🚗🚇🚶 **Multi-Modal Transport Analysis** - Compare driving, transit, and walking options with real-time duration estimates
+- 🚗🚇🚶 **Trasnportation Time Estimate** - Compare driving, transit, and walking options with real-time duration estimates
 - ⏰ **Precise Timeline Generation** - Specific arrival/departure times for every attraction and activity
 - 🍽️ **Contextual Restaurant Recommendations** - Curated dining options near each attraction
 - ☀️ **Weather-Aware Scheduling** - Dynamic suitability scoring and rescheduling for outdoor activities
