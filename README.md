@@ -436,9 +436,9 @@ TripPlanner/
 
 | API | Purpose | Free Tier | Pricing |
 |-----|---------|-----------|---------|
-| **Places API** | Attraction validation & search | $200/month credit | $17 per 1000 requests |
-| **Distance Matrix API** | Multi-modal travel times | $200/month credit | $5-10 per 1000 elements |
-| **Geocoding API** | Address → coordinates | $200/month credit | $5 per 1000 requests |
+| **Places API** | Attraction validation & search|
+| **Distance Matrix API** | Multi-modal travel times |
+| **Geocoding API** | Address → coordinates |
 
 **Setup Instructions:**
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
