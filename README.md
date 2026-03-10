@@ -114,6 +114,7 @@ The CrewAI agents will collaborate and generate a complete itinerary.
 ```
 .
 ├── main.py
+├── web_app.py
 ├── trip_agents.py
 ├── trip_tasks.py
 ├── tools/
@@ -125,6 +126,7 @@ The CrewAI agents will collaborate and generate a complete itinerary.
 ### Key Files
 
 - `main.py` – Entry point that builds and runs the Crew  
+- `web_app.py` – FastAPI web UI that exposes a browser-based interface  
 - `trip_agents.py` – Agent definitions  
 - `trip_tasks.py` – Task prompts and descriptions  
 - `tools/` – Custom tools used by agents  
@@ -237,6 +239,7 @@ This improves multi-agent reasoning consistency.
 - Removed deprecated `langchain.chat_models`  
 - Updated imports to `langchain_openai` and `langchain_community`  
 - Aligned code with latest CrewAI stable API  
+- Added optional FastAPI-based web UI for showcasing trip plans  
 - Resolved dependency conflicts  
 - Simplified setup instructions  
 - Updated LLM configuration examples  
@@ -246,3 +249,50 @@ This improves multi-agent reasoning consistency.
 ## License
 
 This project is released under the MIT License.
+
+---
+
+## Web UI (Browser-Based Trip Planning)
+
+In addition to the CLI, you can run a small web app to collect trip details from a browser and display the generated itinerary.
+
+### 1. Install dependencies
+
+Ensure your environment is activated, then install dependencies (FastAPI, Uvicorn, etc. are already listed in `pyproject.toml`):
+
+```bash
+poetry install
+# or, if using pip
+pip install -e .
+
+poetry run uvicorn web_app:app --reload
+```
+Open http://127.0.0.1:8000/
+
+Make sure your `.env` file is present at the project root so the web server can load:
+
+```env
+OPENAI_API_KEY=your_openai_key_here
+SERPER_API_KEY=your_serper_key_here
+BROWSERLESS_API_KEY=your_browserless_key_here
+```
+
+### 2. Run the web server
+
+From the project root:
+
+```bash
+uvicorn web_app:app --reload
+```
+
+Then open `http://127.0.0.1:8000/` in your browser.
+
+### 3. What the web UI does
+
+- Renders a simple form where you can enter:
+  - Origin city
+  - Candidate cities (comma-separated)
+  - Trip dates or date range
+  - Interests and travel style
+- On submit, the app calls the same CrewAI-based planner used by `main.py` and displays the resulting itinerary in a styled result page.
+

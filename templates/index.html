@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trip Planner – Plan Your Perfect Trip</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body class="page">
+  <div class="container">
+    <header class="header">
+      <h1 class="title">Trip Planner</h1>
+      <p class="subtitle">Let the AI crew design your perfect getaway.</p>
+    </header>
+
+    <main class="card">
+      <form class="form" method="post" action="/plan">
+        <div class="field">
+          <label for="origin">Where are you traveling from?</label>
+          <input
+            id="origin"
+            name="origin"
+            type="text"
+            placeholder="e.g., San Francisco, CA"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="cities">Cities you’re considering</label>
+          <textarea
+            id="cities"
+            name="cities"
+            rows="3"
+            placeholder="e.g., Tokyo, Kyoto, Osaka"
+            required
+          ></textarea>
+          <p class="hint">Enter one or more cities, separated by commas.</p>
+        </div>
+
+        <div class="field field-grid">
+          <div>
+            <label for="date_range">Trip dates or range</label>
+            <input
+              id="date_range"
+              name="date_range"
+              type="text"
+              placeholder="e.g., 2026-05-10 to 2026-05-17"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="interests">Your interests & travel style</label>
+          <textarea
+            id="interests"
+            name="interests"
+            rows="4"
+            placeholder="e.g., food, art museums, hidden bars, light hiking, budget-conscious"
+            required
+          ></textarea>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="button-primary">
+            Generate Trip Plan
+          </button>
+        </div>
+
+        <p class="note">
+          This may take a little while while the agents research destinations and build your itinerary.
+        </p>
+      </form>
+    </main>
+
+    <footer class="footer">
+      <span>Powered by CrewAI Trip Planner</span>
+    </footer>
+  </div>
+</body>
+</html>
+

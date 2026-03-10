@@ -3,3 +3,19 @@
 .python-version
 __pycache__/
 *.pyc
+
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual env
+.venv/
+venv/
+
+# IDE
+.cursor/
+
+# OS
+.DS_Store

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Trip Plan</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body class="page">
+  <div class="container">
+    <header class="header">
+      <h1 class="title">Your Trip Plan</h1>
+      <p class="subtitle">
+        From <strong>{{ origin }}</strong> to <strong>{{ cities }}</strong><br />
+        Dates: <strong>{{ date_range }}</strong>
+      </p>
+    </header>
+
+    <main class="card">
+      <section class="summary">
+        <h2>Traveler Profile</h2>
+        <p><strong>Interests:</strong> {{ interests }}</p>
+      </section>
+
+      <section class="itinerary">
+        <h2>Itinerary</h2>
+        <div class="itinerary-content">
+          <div class="itinerary-markdown">
+            {{ itinerary_html | safe }}
+          </div>
+        </div>
+      </section>
+
+      <div class="actions actions-inline">
+        <a href="/" class="button-secondary">Plan another trip</a>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>Powered by CrewAI Trip Planner</span>
+    </footer>
+  </div>
+</body>
+</html>
+

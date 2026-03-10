@@ -11,6 +11,11 @@ dependencies = [
     "langchain (>=1.2.10,<2.0.0)",
     "crewai (>=1.9.3,<2.0.0)",
     "crewai-tools (>=1.9.3,<2.0.0)",
+    "fastapi",
+    "uvicorn[standard]",
+    "python-dotenv",
+    "jinja2",
+    "markdown2",
 ]
 
 [tool.pyright]
