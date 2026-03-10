@@ -1,10 +1,6 @@
 # AI Crew Trip Planner
 
 <p align="center">
-  <img src="assets/input_form.png" width="850">
-</p>
-
-<p align="center">
 AI-powered multi-agent trip planning using <b>CrewAI</b> with a <b>FastAPI web interface</b>.
 </p>
 
