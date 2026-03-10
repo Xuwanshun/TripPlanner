@@ -1,298 +1,190 @@
-# AI Crew for Trip Planning
+# AI Crew Trip Planner
 
-## Introduction
+<p align="center">
+  <img src="assets/input_form.png" width="850">
+</p>
 
-This project demonstrates how to use the **CrewAI framework (latest stable release)** to automate trip planning when you're deciding between multiple destinations.
-
-CrewAI orchestrates autonomous AI agents that collaborate to:
-
-- Research destinations  
-- Compare options  
-- Gather relevant information  
-- Build a complete travel itinerary based on your preferences  
-
-Originally inspired by work from [@joaomdmoura](https://x.com/joaomdmoura), **this version has been refactored to align with the latest CrewAI APIs, removing deprecated tools and resolving dependency conflicts.**
+<p align="center">
+AI-powered multi-agent trip planning using <b>CrewAI</b> with a <b>FastAPI web interface</b>.
+</p>
 
 ---
 
-## Table of Contents
+## Overview
 
-- [CrewAI Framework](#crewai-framework)  
-- [Installation](#installation)  
-- [Environment Configuration](#environment-configuration)  
-- [Running the Script](#running-the-script)  
-- [Project Structure](#project-structure)  
-- [Using Different LLM Providers](#using-different-llm-providers)  
-  - [Using OpenAI (Recommended)](#using-openai-recommended)  
-  - [Using GPT-3.5 Instead of GPT-4](#using-gpt-35-instead-of-gpt-4)  
-  - [Using Local Models with Ollama](#using-local-models-with-ollama)  
-- [What Was Updated](#what-was-updated)  
-- [License](#license)
+This project demonstrates how **CrewAI agents collaborate** to research travel destinations and automatically generate a complete trip itinerary.
+
+The system uses multiple AI agents working together to:
+
+- Research destinations
+- Compare travel options
+- Gather local insights
+- Generate a structured itinerary
+
+The project provides both:
+
+- A **command line interface**
+- A **browser-based web interface**
 
 ---
 
-## CrewAI Framework
+## Web Interface Preview
 
-CrewAI enables structured collaboration between role-based AI agents.
+### Trip Input Form
 
-In this project:
+<p align="center">
+  <img src="assets/input_form.png" width="850">
+</p>
 
-- A **City Researcher** gathers destination insights  
-- A **Local Expert** provides cultural and local knowledge  
-- A **Travel Planner** builds a complete itinerary  
+Users can enter:
 
-All agents collaborate within a Crew to produce a final trip plan.
+- Origin city
+- Candidate destinations
+- Travel dates
+- Travel interests
 
-This implementation uses the **latest stable CrewAI release**, avoiding deprecated APIs and legacy LangChain integrations.
+The request is sent to a **CrewAI multi-agent workflow** that researches destinations and generates a trip itinerary.
+
+---
+
+### Generated Trip Plan
+
+<p align="center">
+  <img src="assets/trip_plan.png" width="850">
+</p>
+
+The generated result includes:
+
+- Destination comparisons
+- Local recommendations
+- Suggested activities
+- A structured travel itinerary
+
+---
+
+## Features
+
+- Multi-agent collaboration using **CrewAI**
+- AI-powered destination research
+- Automated itinerary generation
+- FastAPI web interface
+- CLI version available
+- Support for OpenAI and local LLMs
 
 ---
 
 ## Installation
 
-### 1. Clone the Repository
+Clone the repository and install dependencies using **Poetry**.
 
 ```bash
-git clone <your-repo-url>
-cd <repo-name>
-```
+git clone https://github.com/yourusername/tripplanner.git
+cd tripplanner
+poetry install --no-root
 
-### 2. Create a Virtual Environment (Recommended)
+## Dependencies
 
-```bash
-python -m venv .venv
-source .venv/bin/activate  # macOS/Linux
-.venv\Scripts\activate     # Windows
-```
+Dependencies are defined in:
 
-### 3. Install Dependencies
+- `pyproject.toml`
+- `poetry.lock`
 
-If using Poetry:
+Install them with:
 
 ```bash
-poetry install
-```
-
-Or with pip:
-
-```bash
-pip install -r requirements.txt
+poetry install --no-root
 ```
 
 ---
 
 ## Environment Configuration
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the project root:
 
 ```env
-OPENAI_API_KEY=your_openai_key_here
-SERPER_API_KEY=your_serper_key_here
-BROWSERLESS_API_KEY=your_browserless_key_here
+OPENAI_API_KEY=your_openai_key
+SERPER_API_KEY=your_serper_key
+BROWSERLESS_API_KEY=your_browserless_key
 ```
 
-> ⚠️ If using OpenAI models (GPT-4, GPT-3.5), usage will incur API costs.
+These keys allow the agents to:
+
+- Access LLM APIs
+- Perform web search
+- Retrieve webpage content
 
 ---
 
-## Running the Script
+## Running the Web Application
 
-Run:
+Start the FastAPI server:
+
+```bash
+poetry run uvicorn web_app:app --reload
+```
+
+You should see output similar to:
+
+```text
+Uvicorn running on http://127.0.0.1:8000
+```
+
+---
+
+## Open the Web Interface
+
+Open your browser and navigate to:
+
+```
+http://127.0.0.1:8000/
+```
+
+You will see the **Trip Planner web interface**.
+
+---
+
+## Running the CLI Version
+
+You can also run the trip planner directly from the terminal:
 
 ```bash
 python main.py
 ```
 
-You will be prompted to enter your trip idea (for example:  
-“Beach vacation in Europe” or “Adventure trip in South America”).
+Example prompts:
 
-The CrewAI agents will collaborate and generate a complete itinerary.
+```
+Beach vacation in Europe
+Adventure trip in South America
+Food tour in Japan
+```
+
+The AI agents will collaborate to produce a complete itinerary.
 
 ---
 
 ## Project Structure
 
 ```
-.
+TripPlanner
+│
 ├── main.py
 ├── web_app.py
 ├── trip_agents.py
 ├── trip_tasks.py
-├── tools/
+│
+├── tools
 │   ├── search_tools.py
 │   └── browser_tools.py
+│
+├── templates
+├── static
+│
+├── assets
+│   ├── input_form.png
+│   └── trip_plan.png
+│
+├── pyproject.toml
+├── poetry.lock
 └── README.md
 ```
-
-### Key Files
-
-- `main.py` – Entry point that builds and runs the Crew  
-- `web_app.py` – FastAPI web UI that exposes a browser-based interface  
-- `trip_agents.py` – Agent definitions  
-- `trip_tasks.py` – Task prompts and descriptions  
-- `tools/` – Custom tools used by agents  
-
-All files have been updated to remove deprecated patterns and align with the latest CrewAI APIs.
-
----
-
-# Using Different LLM Providers
-
----
-
-## Using OpenAI (Recommended)
-
-Example configuration using the latest LangChain OpenAI integration:
-
-```python
-from crewai import Agent
-from langchain_openai import ChatOpenAI
-
-llm = ChatOpenAI(
-    model="gpt-4o",
-    temperature=0.7
-)
-
-local_expert = Agent(
-    role="Local Expert",
-    goal="Provide the best insights about the selected city",
-    backstory="A knowledgeable local guide with deep cultural understanding.",
-    tools=[...],
-    llm=llm,
-    verbose=True
-)
-```
-
----
-
-## Using GPT-3.5 Instead of GPT-4
-
-To switch models, simply change the model parameter:
-
-```python
-from langchain_openai import ChatOpenAI
-
-llm = ChatOpenAI(
-    model="gpt-3.5-turbo",
-    temperature=0.7
-)
-```
-
-Then pass `llm=llm` into your desired agents.
-
-No other code changes are required.
-
----
-
-## Using Local Models with Ollama
-
-CrewAI supports local LLMs such as Ollama.
-
-### 1. Install Ollama
-
-Follow the official installation guide from Ollama.
-
-Start a model:
-
-```bash
-ollama run llama3
-```
-
----
-
-### 2. Configure Ollama in Code
-
-```python
-from langchain_community.llms import Ollama
-from crewai import Agent
-
-ollama_llm = Ollama(
-    model="llama3",
-    base_url="http://localhost:11434"
-)
-
-local_expert = Agent(
-    role="Local Expert",
-    goal="Provide detailed local insights",
-    backstory="An experienced travel local.",
-    tools=[...],
-    llm=ollama_llm,
-    verbose=True
-)
-```
-
----
-
-### Recommended Modelfile Tweaks
-
-When customizing a local model:
-
-- Add `Observation` as a stop word  
-- Tune `temperature`  
-- Tune `top_p`  
-
-This improves multi-agent reasoning consistency.
-
----
-
-## What Was Updated
-
-- Removed deprecated `langchain.chat_models`  
-- Updated imports to `langchain_openai` and `langchain_community`  
-- Aligned code with latest CrewAI stable API  
-- Added optional FastAPI-based web UI for showcasing trip plans  
-- Resolved dependency conflicts  
-- Simplified setup instructions  
-- Updated LLM configuration examples  
-
----
-
-## License
-
-This project is released under the MIT License.
-
----
-
-## Web UI (Browser-Based Trip Planning)
-
-In addition to the CLI, you can run a small web app to collect trip details from a browser and display the generated itinerary.
-
-### 1. Install dependencies
-
-Ensure your environment is activated, then install dependencies (FastAPI, Uvicorn, etc. are already listed in `pyproject.toml`):
-
-```bash
-poetry install
-# or, if using pip
-pip install -e .
-
-poetry run uvicorn web_app:app --reload
-```
-Open http://127.0.0.1:8000/
-
-Make sure your `.env` file is present at the project root so the web server can load:
-
-```env
-OPENAI_API_KEY=your_openai_key_here
-SERPER_API_KEY=your_serper_key_here
-BROWSERLESS_API_KEY=your_browserless_key_here
-```
-
-### 2. Run the web server
-
-From the project root:
-
-```bash
-uvicorn web_app:app --reload
-```
-
-Then open `http://127.0.0.1:8000/` in your browser.
-
-### 3. What the web UI does
-
-- Renders a simple form where you can enter:
-  - Origin city
-  - Candidate cities (comma-separated)
-  - Trip dates or date range
-  - Interests and travel style
-- On submit, the app calls the same CrewAI-based planner used by `main.py` and displays the resulting itinerary in a styled result page.
-
