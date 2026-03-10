@@ -4,9 +4,7 @@
 An intelligent trip planning system powered by **CrewAI** that generates comprehensive, multi-day itineraries with precise timing, estimated transportation time, restaurant recommendations, weather forecasts, and cost estimates. This project demonstrates advanced AI agent collaboration to solve complex scheduling and optimization problems.
 
 ## Demo
-<video controls width="700">
-  <source src="assets/demo.webm" type="video/webm">
-</video>
+[![Watch the demo](assets/ui.png)](assets/demo.webm)
 
 ### ✨ Key Capabilities
 - 🗺️ **Multi-Destination Planning** - Seamlessly plan trips across multiple cities with optimized routing
