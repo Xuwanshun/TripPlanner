@@ -6,6 +6,12 @@ An intelligent trip planning system powered by **CrewAI** that generates compreh
 ## Demo
 [![Watch the demo](assets/ui.png)](assets/demo.webm)
 
+## Demo
+
+[![TripPlanner Demo](assets/ui.png)](https://github.com/Xuwanshun/TripPlanner/raw/refs/heads/main/assets/demo.webm)
+
+▶️ Click the image to watch the demo
+
 ### ✨ Key Capabilities
 - 🗺️ **Multi-Destination Planning** - Seamlessly plan trips across multiple cities with optimized routing
 - 🚗🚶 **Trasnportation Time Estimate** - Compare driving, transit, and walking options with real-time duration estimates
